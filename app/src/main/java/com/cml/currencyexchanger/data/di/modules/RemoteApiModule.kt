@@ -11,5 +11,5 @@ class RemoteApiModule {
 
     @Singleton
     @Provides
-    fun provideExchangeRatesApi(retrofit: Retrofit) = retrofit.create(ExchangeRatesApi::class.java)
+    fun provideExchangeRatesApi(retrofit: Retrofit): ExchangeRatesApi = retrofit.create(ExchangeRatesApi::class.java)
 }
