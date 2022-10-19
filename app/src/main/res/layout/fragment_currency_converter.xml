@@ -5,12 +5,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_balances"
+    <include
+        android:id="@+id/balancesView"
+        layout="@layout/layout_balances"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/margin_large"/>
 
-    <include layout="@layout/layout_currency_exchange"
+    <include
+        android:id="@+id/currencyExchangeView"
+        layout="@layout/layout_currency_exchange"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/margin_large"/>
