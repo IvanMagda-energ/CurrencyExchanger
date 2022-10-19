@@ -2,10 +2,16 @@ package com.cml.currencyexchanger.view.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.cml.currencyexchanger.data.models.Currency
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 
-class CurrencyConverterViewModel : ViewModel() {
+class CurrencyConverterViewModel @AssistedInject constructor(
+    @Assisted savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
 
     private val _sellAmountLiveData by lazy { MutableLiveData<Float>() }
@@ -34,5 +40,11 @@ class CurrencyConverterViewModel : ViewModel() {
 
     fun setReceiveCurrency(currency: Currency) {
         _receiveCurrencyLiveData.value = currency
+    }
+
+
+    @AssistedFactory
+    interface Factory {
+        fun create(savedStateHandle: SavedStateHandle): CurrencyConverterViewModel
     }
 }

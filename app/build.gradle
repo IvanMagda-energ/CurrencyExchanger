@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'kotlin-android'
 }
 
 android {
@@ -40,7 +41,7 @@ android {
 dependencies {
     def nav_version = "2.5.2"
     def lifecycle_version = "2.2.0"
-    def daggerVersion = '2.41'
+    def daggerVersion = '2.42'
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -60,9 +61,14 @@ dependencies {
 
     //Dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+
+    //KTX
+    implementation "androidx.fragment:fragment-ktx:1.5.3"
+    implementation "androidx.activity:activity-ktx:1.2.0"
 
     //Retrofit
 
