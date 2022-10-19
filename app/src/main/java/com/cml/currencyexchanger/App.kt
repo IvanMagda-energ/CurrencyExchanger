@@ -2,9 +2,13 @@ package com.cml.currencyexchanger
 
 import android.app.Application
 import com.cml.currencyexchanger.data.di.components.ComponentsHolder
+import com.google.gson.Gson
+import javax.inject.Inject
 
 class App : Application() {
 
+    @Inject
+    lateinit var gson: Gson
     private lateinit var componentsHolder: ComponentsHolder
 
     companion object {
@@ -20,6 +24,7 @@ class App : Application() {
 
     private fun initDagger() {
         componentsHolder = ComponentsHolder(this)
+        componentsHolder.getAppComponent().inject(this)
     }
 
     fun components() = componentsHolder
