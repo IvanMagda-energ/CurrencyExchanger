@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/background_circle_red" />
+    <item
+        android:drawable="@drawable/ic_up_light"
+        android:gravity="center_horizontal" />
+</layer-list>
