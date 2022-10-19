@@ -1,8 +1,7 @@
 package com.cml.currencyexchanger.view.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import com.cml.currencyexchanger.R
 
 class MainActivity : AppCompatActivity() {
