@@ -24,9 +24,8 @@ class CurrencyConverterFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initSpinners()
-        observeAndSaveSpinners()
-        observeAndSaveSellAmount()
-        observeExchangeRates()
+        watchSpinners()
+        watchSellAmount()
         observeReceiveAmount()
 
     }
@@ -39,12 +38,7 @@ class CurrencyConverterFragment :
     }
 
 
-    private fun observeExchangeRates() {
-        //TODO
-    }
-
-
-    private fun observeAndSaveSellAmount() {
+    private fun watchSellAmount() {
 
         binding.currencyExchangeView.sellAmountEditText.addTextChangedListener(object :
             TextWatcher {
@@ -60,7 +54,7 @@ class CurrencyConverterFragment :
         })
     }
 
-    private fun observeAndSaveSpinners() {
+    private fun watchSpinners() {
         binding.currencyExchangeView.sellCurrencySpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(

@@ -8,23 +8,16 @@ import androidx.room.Transaction
 import com.cml.currencyexchanger.data.models.ExchangeRates
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 
 @Dao
 abstract class ExchangeRatesDao {
 
-    @Query("SELECT * FROM Exchange_Rates LIMIT 1")
+    @Query("SELECT * FROM Exchange_Rates")
     abstract fun getExchangeRates(): Maybe<ExchangeRates>
 
-    @Transaction
-    open fun insertSingleRates(rates: ExchangeRates) {
-        clearTable()
-        insert(rates)
-    }
-
-    fun insertExchangeRatesCompletable(rates: ExchangeRates): Completable {
-        insertSingleRates(rates)
-        return Completable.complete()
-    }
+    @Query("SELECT * FROM Exchange_Rates")
+    abstract fun observeExchangeRates(): Observable<ExchangeRates>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(rates: ExchangeRates): Completable

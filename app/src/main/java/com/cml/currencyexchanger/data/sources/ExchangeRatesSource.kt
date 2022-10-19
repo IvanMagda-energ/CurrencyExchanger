@@ -15,7 +15,5 @@ class ExchangeRatesSource @Inject constructor(
 
     fun getExchangeRates(): Single<ExchangeRates> {
         return exchangeRatesApi.getExchangeRates()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
     }
 }

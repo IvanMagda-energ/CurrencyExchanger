@@ -8,5 +8,5 @@ import androidx.room.PrimaryKey
 data class ExchangeRates(
     @PrimaryKey val base: String,
     val date: String,
-    val rates: List<Map<String, Float>>
+    val rates: Map<String, Float>
 )
