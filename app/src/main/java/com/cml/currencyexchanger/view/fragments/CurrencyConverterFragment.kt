@@ -18,7 +18,7 @@ class CurrencyConverterFragment :
 
 
     private val viewModel: CurrencyConverterViewModel by lazyViewModel {
-        App.get().components().getAppComponent().getCurrencyConverterViewModel().create(it)
+        App.get().components().getAppComponent().getCurrencyConverterViewModelFactory().create(it)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

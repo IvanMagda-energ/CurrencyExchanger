@@ -22,7 +22,7 @@ interface AppComponent {
         ): AppComponent
     }
 
-    fun getCurrencyConverterViewModel(): CurrencyConverterViewModel.Factory
+    fun getCurrencyConverterViewModelFactory(): CurrencyConverterViewModel.Factory
 
     fun inject(app: App)
 }
