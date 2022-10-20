@@ -10,8 +10,10 @@ import android.widget.ArrayAdapter
 import com.cml.currencyexchanger.App
 import com.cml.currencyexchanger.Extensions.Companion.isPositive
 import com.cml.currencyexchanger.Extensions.Companion.roundDecimal
+import com.cml.currencyexchanger.R
 import com.cml.currencyexchanger.data.models.Currency
 import com.cml.currencyexchanger.databinding.FragmentCurrencyConverterBinding
+import com.cml.currencyexchanger.view.popup.PopupMessage
 import com.cml.currencyexchanger.view.utils.lazyViewModel
 import com.cml.currencyexchanger.view.viewmodels.CurrencyConverterViewModel
 
@@ -30,7 +32,14 @@ class CurrencyConverterFragment :
         watchSellAmount()
         observeReceiveAmount()
         observeBalances()
+        onSubmitButtonClick()
 
+    }
+
+    private fun onSubmitButtonClick() {
+        binding.submitButton.setOnClickListener {
+            //TODO: perform click
+        }
     }
 
     @SuppressLint("SetTextI18n")

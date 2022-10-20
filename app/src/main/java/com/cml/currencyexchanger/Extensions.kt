@@ -1,5 +1,7 @@
 package com.cml.currencyexchanger
 
+import android.opengl.Visibility
+import android.view.View
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -11,6 +13,13 @@ class Extensions {
                 .apply { roundingMode = RoundingMode.FLOOR }
                 .format(this).toFloatOrNull() ?: 0.0F
 
+        fun View.makeGone() {
+            this.visibility = View.GONE
+        }
+
+        fun View.makeVisible() {
+            this.visibility = View.VISIBLE
+        }
 
     }
 }

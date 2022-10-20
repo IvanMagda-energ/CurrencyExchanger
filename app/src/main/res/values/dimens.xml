@@ -9,11 +9,14 @@
 
     <dimen name="balance_text_size">25sp</dimen>
     <dimen name="normal_text_size">15sp</dimen>
+    <dimen name="medium_text_size">18sp</dimen>
 
     <dimen name="margin_min">3dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_medium">20dp</dimen>
     <dimen name="margin_large">30dp</dimen>
+
+    <dimen name="popup_ok_button_width">200dp</dimen>
 
     <dimen name="title_text_view_height_default">20dp</dimen>
 

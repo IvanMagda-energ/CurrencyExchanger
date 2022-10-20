@@ -11,4 +11,15 @@
     <string name="eur">Eur</string>
     <string name="usd">Usd</string>
     <string name="bgn">Bgn</string>
+
+    <!-- Popup -->
+    <string name="ops">Ooooops</string>
+    <string name="success">Success</string>
+    <string name="ok">Understand</string>
+    <string name="no_money">Not enough funds!</string>
+    <string name="no_selected_account">You do not have this type of account yet!</string>
+    <string name="wrong_currency_choice">Please select another currency!</string>
+    <string name="empty_in_amount">Please enter the amount you want to convert!</string>
+    <string name="success_msg">You have converted %1$s %2$s to %3$s %4$s. Commission Fee - %5$s %2$s</string>
+
 </resources>

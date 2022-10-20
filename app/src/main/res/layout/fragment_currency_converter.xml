@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_large"
-        android:background="@drawable/submit_button_background"
+        android:background="@drawable/selector_oval_button"
         android:text="@string/submit_button_title"
         android:textAllCaps="true" />
 </LinearLayout>
