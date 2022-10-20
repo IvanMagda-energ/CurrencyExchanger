@@ -4,14 +4,13 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.cml.currencyexchanger.App
 import com.cml.currencyexchanger.Extensions.Companion.isPositive
+import com.cml.currencyexchanger.Extensions.Companion.roundDecimal
 import com.cml.currencyexchanger.data.models.Currency
-import com.cml.currencyexchanger.data.models.User
 import com.cml.currencyexchanger.databinding.FragmentCurrencyConverterBinding
 import com.cml.currencyexchanger.view.utils.lazyViewModel
 import com.cml.currencyexchanger.view.viewmodels.CurrencyConverterViewModel
@@ -26,19 +25,31 @@ class CurrencyConverterFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("TEST USER", App.get().gson.toJson(User()))
         initSpinners()
         watchSpinners()
         watchSellAmount()
         observeReceiveAmount()
+        observeBalances()
 
     }
 
     @SuppressLint("SetTextI18n")
     private fun observeReceiveAmount() {
         viewModel.receiveAmountLiveData.observe(viewLifecycleOwner) {
-            if(it.isPositive()) binding.currencyExchangeView.receiveAmountTextView.text = "+ $it"
+            if (it.isPositive()) binding.currencyExchangeView.receiveAmountTextView.text = "+ $it"
             else binding.currencyExchangeView.receiveAmountTextView.text = ""
+        }
+    }
+
+    private fun observeBalances() {
+        viewModel.euroBalanceLiveData.observe(viewLifecycleOwner) {
+            binding.balancesView.balanceEurValue.text = "${it.toFloat().roundDecimal()}"
+        }
+        viewModel.usdBalanceLiveData.observe(viewLifecycleOwner) {
+            binding.balancesView.balanceUsdValue.text = "${it.toFloat().roundDecimal()}"
+        }
+        viewModel.bgnBalanceLiveData.observe(viewLifecycleOwner) {
+            binding.balancesView.balanceBgnValue.text = "${it.toFloat().roundDecimal()}"
         }
     }
 

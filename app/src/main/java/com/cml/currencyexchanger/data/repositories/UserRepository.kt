@@ -3,9 +3,8 @@ package com.cml.currencyexchanger.data.repositories
 import android.annotation.SuppressLint
 import com.cml.currencyexchanger.data.dao.UserDao
 import com.cml.currencyexchanger.data.models.User
-import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -15,15 +14,17 @@ class UserRepository @Inject constructor(
 ) {
 
     @SuppressLint("CheckResult")
-    fun createDefaultUserIfNotExists(): Completable {
+    fun createDefaultUserIfNotExists(): Maybe<User> {
         return userDao.getUser()
             .subscribeOn(Schedulers.io())
-            .doOnError {
+            .switchIfEmpty(
                 userDao.clearUserTable()
                     .subscribeOn(Schedulers.io())
                     .andThen(userDao.insertUser(User()))
-            }
-            .ignoreElement()
+                    .andThen(userDao.getUser())
+            )
+            .observeOn(AndroidSchedulers.mainThread())
+
     }
 
     fun observeUser(): Observable<User> {
@@ -31,8 +32,6 @@ class UserRepository @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
-
-
 
 
 }

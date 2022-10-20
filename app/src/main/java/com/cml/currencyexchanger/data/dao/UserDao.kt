@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.cml.currencyexchanger.data.models.ExchangeRates
 import com.cml.currencyexchanger.data.models.User
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -15,7 +14,7 @@ import io.reactivex.Single
 abstract class UserDao {
 
     @Query("SELECT * FROM User")
-    abstract fun getUser(): Single<User>
+    abstract fun getUser(): Maybe<User>
 
     @Query("SELECT * FROM User")
     abstract fun observeUser(): Observable<User>

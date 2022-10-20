@@ -8,12 +8,11 @@ import androidx.lifecycle.ViewModel
 import com.cml.currencyexchanger.data.models.Currency
 import com.cml.currencyexchanger.data.models.ExchangeRates
 import com.cml.currencyexchanger.data.repositories.ExchangeRatesRepository
+import com.cml.currencyexchanger.data.repositories.UserRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.reactivex.disposables.CompositeDisposable
-import com.cml.currencyexchanger.Extensions.Companion.isPositive
-import com.cml.currencyexchanger.data.repositories.UserRepository
 
 class CurrencyConverterViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
@@ -33,8 +32,9 @@ class CurrencyConverterViewModel @AssistedInject constructor(
 
         userRepository.createDefaultUserIfNotExists()
             .subscribe(
-                {},
-                { Log.e("Create default User Error", "$it") }
+                { Log.e("Created user", "$it") },
+                { Log.e("Create default User Error", "$it") },
+                {}
             )
             .also { disposable.add(it) }
 
@@ -53,7 +53,6 @@ class CurrencyConverterViewModel @AssistedInject constructor(
                 },
                 { Log.e("Local DB Error", "Error while observing Rates") })
             .also { disposable.add(it) }
-
 
 
     }
