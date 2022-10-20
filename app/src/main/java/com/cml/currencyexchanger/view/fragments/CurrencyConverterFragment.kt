@@ -10,11 +10,10 @@ import android.widget.ArrayAdapter
 import com.cml.currencyexchanger.App
 import com.cml.currencyexchanger.Extensions.Companion.isPositive
 import com.cml.currencyexchanger.Extensions.Companion.roundDecimal
-import com.cml.currencyexchanger.R
 import com.cml.currencyexchanger.data.models.Currency
 import com.cml.currencyexchanger.databinding.FragmentCurrencyConverterBinding
 import com.cml.currencyexchanger.view.popup.PopupMessage
-import com.cml.currencyexchanger.view.utils.lazyViewModel
+import com.cml.currencyexchanger.view.uiUtils.lazyViewModel
 import com.cml.currencyexchanger.view.viewmodels.CurrencyConverterViewModel
 
 class CurrencyConverterFragment :
@@ -38,7 +37,7 @@ class CurrencyConverterFragment :
 
     private fun onSubmitButtonClick() {
         binding.submitButton.setOnClickListener {
-            //TODO: perform click
+            attemptConversion()
         }
     }
 
@@ -51,14 +50,10 @@ class CurrencyConverterFragment :
     }
 
     private fun observeBalances() {
-        viewModel.euroBalanceLiveData.observe(viewLifecycleOwner) {
-            binding.balancesView.balanceEurValue.text = "${it.toFloat().roundDecimal()}"
-        }
-        viewModel.usdBalanceLiveData.observe(viewLifecycleOwner) {
-            binding.balancesView.balanceUsdValue.text = "${it.toFloat().roundDecimal()}"
-        }
-        viewModel.bgnBalanceLiveData.observe(viewLifecycleOwner) {
-            binding.balancesView.balanceBgnValue.text = "${it.toFloat().roundDecimal()}"
+        viewModel.balanceLiveData.observe(viewLifecycleOwner) {
+            binding.balancesView.balanceEurValue.text = "${it.euro.roundDecimal()}"
+            binding.balancesView.balanceUsdValue.text = "${it.usd.roundDecimal()}"
+            binding.balancesView.balanceBgnValue.text = "${it.bgn.roundDecimal()}"
         }
     }
 
@@ -122,6 +117,25 @@ class CurrencyConverterFragment :
         )
         binding.currencyExchangeView.sellCurrencySpinner.adapter = adapter
         binding.currencyExchangeView.receiveCurrencySpinner.adapter = adapter
+    }
+
+    private fun attemptConversion() {
+        if (!viewModel.isAmountNotEmpty()) {
+            PopupMessage(requireContext()).showEmptyInAmountFailurePopup()
+            return
+        }
+        if (viewModel.areCurrenciesTheSame()) {
+            PopupMessage(requireContext()).showWrongCurrencyFailurePopup()
+            return
+        }
+        if (!viewModel.areEnoughFunds()) {
+            PopupMessage(requireContext()).showNoMoneyFailurePopup()
+            return
+        }
+
+        //TODO: conversion itself
+
+
     }
 
 }

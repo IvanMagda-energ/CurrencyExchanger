@@ -5,8 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.cml.currencyexchanger.Extensions.Companion.toFloatOrZero
+import com.cml.currencyexchanger.Extensions.Companion.toLongOrZero
+import com.cml.currencyexchanger.Extensions.Companion.toStringOrEmpty
 import com.cml.currencyexchanger.data.models.Currency
 import com.cml.currencyexchanger.data.models.ExchangeRates
+import com.cml.currencyexchanger.data.models.Balance
+import com.cml.currencyexchanger.data.models.Balance.Companion.COMMISSION_PERCENT
 import com.cml.currencyexchanger.data.repositories.ExchangeRatesRepository
 import com.cml.currencyexchanger.data.repositories.UserRepository
 import dagger.assisted.Assisted
@@ -32,7 +37,7 @@ class CurrencyConverterViewModel @AssistedInject constructor(
 
         userRepository.createDefaultUserIfNotExists()
             .subscribe(
-                { Log.e("Created user", "$it") },
+                { Log.i("Created user", "$it") },
                 { Log.e("Create default User Error", "$it") },
                 {}
             )
@@ -47,9 +52,8 @@ class CurrencyConverterViewModel @AssistedInject constructor(
         userRepository.observeUser()
             .subscribe(
                 {
-                    _euroBalanceLiveData.value = it.balance.euro
-                    _usdBalanceLiveData.value = it.balance.usd
-                    _bgnBalanceLiveData.value = it.balance.bgn
+                    _balanceLiveData.value = it.balance
+                    userConversionsAmountLiveData.value = it.conversionsAmount
                 },
                 { Log.e("Local DB Error", "Error while observing Rates") })
             .also { disposable.add(it) }
@@ -58,21 +62,19 @@ class CurrencyConverterViewModel @AssistedInject constructor(
     }
 
     private val currentRatesLiveData by lazy { MutableLiveData<ExchangeRates>() }
+    private val calculatedCommission by lazy { MutableLiveData<Float>() }
+    private val userConversionsAmountLiveData by lazy { MutableLiveData<Long>() }
 
     private val sellAmountLiveData by lazy { MutableLiveData<Float>() }
     fun setSellAmount(amount: Float) {
         sellAmountLiveData.value = amount
+        calculatedCommission.value = amount * COMMISSION_PERCENT
         setReceiveAmount()
     }
 
-    private val _euroBalanceLiveData by lazy { MutableLiveData<Float>() }
-    val euroBalanceLiveData: LiveData<Float> get() = _euroBalanceLiveData
+    private val _balanceLiveData by lazy { MutableLiveData<Balance>() }
+    val balanceLiveData: LiveData<Balance> get() = _balanceLiveData
 
-    private val _usdBalanceLiveData by lazy { MutableLiveData<Float>() }
-    val usdBalanceLiveData: LiveData<Float> get() = _usdBalanceLiveData
-
-    private val _bgnBalanceLiveData by lazy { MutableLiveData<Float>() }
-    val bgnBalanceLiveData: LiveData<Float> get() = _bgnBalanceLiveData
 
     private val _receiveAmountLiveData by lazy { MutableLiveData<Float>() }
     val receiveAmountLiveData: LiveData<Float> get() = _receiveAmountLiveData
@@ -96,9 +98,9 @@ class CurrencyConverterViewModel @AssistedInject constructor(
     }
 
     private fun calculateReceiveAmount(): Float? {
-        val inAmount = sellAmountLiveData.value?.toFloat() ?: 0.0F
-        val inCurrency = sellCurrencyLiveData.value?.toString() ?: ""
-        val outCurrency = receiveCurrencyLiveData.value?.toString() ?: ""
+        val inAmount = sellAmountLiveData.value.toFloatOrZero()
+        val inCurrency = sellCurrencyLiveData.value.toStringOrEmpty()
+        val outCurrency = receiveCurrencyLiveData.value.toStringOrEmpty()
         return if (inCurrency.isNotEmpty() && outCurrency.isNotEmpty()) {
             currentRatesLiveData.value?.convert(
                 inAmount,
@@ -106,6 +108,39 @@ class CurrencyConverterViewModel @AssistedInject constructor(
                 outCurrency
             )
         } else null
+    }
+
+    fun isAmountNotEmpty(): Boolean {
+        _balanceLiveData.value?.let {
+            return it.isAmountNotEmpty(sellAmountLiveData.value.toFloatOrZero())
+        }
+        return true
+    }
+
+    fun areCurrenciesTheSame(): Boolean {
+        _balanceLiveData.value?.let {
+            return it.areCurrenciesSame(
+                sellCurrencyLiveData.value.toStringOrEmpty(),
+                receiveCurrencyLiveData.value.toStringOrEmpty()
+            )
+        }
+        return true
+    }
+
+    fun areEnoughFunds(): Boolean {
+        val realCommission =
+            if (userConversionsAmountLiveData.value.toLongOrZero() > Balance.FREE_CONVERSIONS) calculatedCommission.value.toFloatOrZero()
+            else 0.0f
+        _balanceLiveData.value?.let {
+            val currentCurrencyBalance =
+                it.findBalance(sellCurrencyLiveData.value.toStringOrEmpty())
+            return it.areEnoughFunds(
+                currentCurrencyBalance,
+                sellAmountLiveData.toFloatOrZero(),
+                realCommission
+            )
+        }
+        return false
     }
 
 

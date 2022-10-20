@@ -21,14 +21,13 @@ class AppDatabaseProvider @Inject constructor(
                         "`id` INTEGER PRIMARY KEY NOT NULL DEFAULT 0, " +
                         "`balance` TEXT NOT NULL DEFAULT '{\"bgn\":0.0,\"euro\":1000.0,\"usd\":0.0}', `conversionsAmount` INTEGER NOT NULL DEFAULT 0)")
             }
-
         }
     }
 
 
     private fun buildDb(): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, DB_NAME)
-//            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration()
             .addMigrations(
                 MIGRATION_1_2
             )

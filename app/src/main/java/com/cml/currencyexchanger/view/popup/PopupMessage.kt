@@ -21,14 +21,6 @@ class PopupMessage(context: Context) : PopupMessageBuilder(context) {
         ).withIcon(R.drawable.ic_warning)
     }
 
-    fun showNoSelectedBalanceFailurePopup() {
-        PopupMessage(context).createFromBasicContentView(
-            title = context.getString(R.string.ops),
-            msg = context.getString(R.string.no_selected_account),
-            positive = context.getString(R.string.ok)
-        ).withIcon(R.drawable.ic_warning)
-    }
-
     fun showNoMoneyFailurePopup() {
         PopupMessage(context).createFromBasicContentView(
             title = context.getString(R.string.ops),

@@ -1,7 +1,5 @@
-package com.cml.currencyexchanger.view.utils
+package com.cml.currencyexchanger.view.uiUtils
 
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
