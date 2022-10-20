@@ -56,7 +56,7 @@ data class Balance(
     //Here is the place to create the special conditions for the commission
     fun calcCommission(amount: Float, numberUserConversions: Long): Float {
         val commissionByPercent = amount * COMMISSION_PERCENT
-        return if (numberUserConversions > FREE_CONVERSIONS)
+        return if (numberUserConversions >= FREE_CONVERSIONS)
             commissionByPercent.toFloatOrZero()
         else 0.0f
     }
@@ -74,6 +74,6 @@ data class Balance(
         sellAmount: Float,
         commission: Float
     ): Boolean =
-        balanceAmount > sellAmount + commission
+        balanceAmount > (sellAmount + commission)
 
 }

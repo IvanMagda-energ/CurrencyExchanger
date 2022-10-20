@@ -68,7 +68,6 @@ class CurrencyConverterViewModel @AssistedInject constructor(
     private val sellAmountLiveData by lazy { MutableLiveData<Float>() }
     fun setSellAmount(amount: Float) {
         sellAmountLiveData.value = amount
-        calculatedCommission.value = calcRealCommission(amount)
         setReceiveAmount()
     }
 
@@ -138,10 +137,11 @@ class CurrencyConverterViewModel @AssistedInject constructor(
     }
 
     fun areEnoughFunds(): Boolean {
+        calculatedCommission.value = calcRealCommission(sellAmountLiveData.value.toFloatOrZero())
         _balanceLiveData.value?.let {
             return it.areEnoughFunds(
                 it.findBalanceValue(sellCurrencyLiveData.value.toStringOrEmpty()),
-                sellAmountLiveData.toFloatOrZero(),
+                sellAmountLiveData.value.toFloatOrZero(),
                 calculatedCommission.value.toFloatOrZero()
             )
         }
@@ -149,6 +149,7 @@ class CurrencyConverterViewModel @AssistedInject constructor(
     }
 
     fun convert() {
+        calculatedCommission.value = calcRealCommission(sellAmountLiveData.value.toFloatOrZero())
         _balanceLiveData.value?.let { balance ->
             val conversion = Conversion(
                 sellCurrencyLiveData.value.toStringOrEmpty(),
