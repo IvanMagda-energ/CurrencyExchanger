@@ -13,17 +13,29 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.reactivex.disposables.CompositeDisposable
 import com.cml.currencyexchanger.Extensions.Companion.isPositive
+import com.cml.currencyexchanger.data.repositories.UserRepository
 
 class CurrencyConverterViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
-    exchangeRatesRepository: ExchangeRatesRepository
+    exchangeRatesRepository: ExchangeRatesRepository,
+    userRepository: UserRepository
 ) : ViewModel() {
 
     private val disposable by lazy { CompositeDisposable() }
 
     init {
         exchangeRatesRepository.refreshExchangesRate()
-            .subscribe()
+            .subscribe(
+                {},
+                { Log.e("Refresh Rates Error", "Error while refreshing rates: $it") }
+            )
+            .also { disposable.add(it) }
+
+        userRepository.createDefaultUserIfNotExists()
+            .subscribe(
+                {},
+                { Log.e("Create default User Error", "$it") }
+            )
             .also { disposable.add(it) }
 
         exchangeRatesRepository.observeRates()
@@ -31,6 +43,19 @@ class CurrencyConverterViewModel @AssistedInject constructor(
                 { currentRatesLiveData.value = it },
                 { Log.e("Local DB Error", "Error while observing Rates") })
             .also { disposable.add(it) }
+
+        userRepository.observeUser()
+            .subscribe(
+                {
+                    _euroBalanceLiveData.value = it.balance.euro
+                    _usdBalanceLiveData.value = it.balance.usd
+                    _bgnBalanceLiveData.value = it.balance.bgn
+                },
+                { Log.e("Local DB Error", "Error while observing Rates") })
+            .also { disposable.add(it) }
+
+
+
     }
 
     private val currentRatesLiveData by lazy { MutableLiveData<ExchangeRates>() }
@@ -40,6 +65,15 @@ class CurrencyConverterViewModel @AssistedInject constructor(
         sellAmountLiveData.value = amount
         setReceiveAmount()
     }
+
+    private val _euroBalanceLiveData by lazy { MutableLiveData<Float>() }
+    val euroBalanceLiveData: LiveData<Float> get() = _euroBalanceLiveData
+
+    private val _usdBalanceLiveData by lazy { MutableLiveData<Float>() }
+    val usdBalanceLiveData: LiveData<Float> get() = _usdBalanceLiveData
+
+    private val _bgnBalanceLiveData by lazy { MutableLiveData<Float>() }
+    val bgnBalanceLiveData: LiveData<Float> get() = _bgnBalanceLiveData
 
     private val _receiveAmountLiveData by lazy { MutableLiveData<Float>() }
     val receiveAmountLiveData: LiveData<Float> get() = _receiveAmountLiveData

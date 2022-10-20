@@ -1,6 +1,7 @@
 package com.cml.currencyexchanger.data.di.modules
 
 import com.cml.currencyexchanger.data.dao.ExchangeRatesDao
+import com.cml.currencyexchanger.data.dao.UserDao
 import com.cml.currencyexchanger.data.db.AppDatabase
 import com.cml.currencyexchanger.data.db.AppDatabaseProvider
 import dagger.Module
@@ -20,4 +21,9 @@ class LocalDbModule {
     @Provides
     fun provideExchangeRatesDao(db: AppDatabase): ExchangeRatesDao =
         db.getExchangeRatesDao()
+
+    @Singleton
+    @Provides
+    fun provideUserDao(db: AppDatabase): UserDao =
+        db.getUserDao()
 }
