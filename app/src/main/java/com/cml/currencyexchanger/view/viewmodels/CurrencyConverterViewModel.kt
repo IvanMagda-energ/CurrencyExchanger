@@ -8,10 +8,10 @@ import androidx.lifecycle.ViewModel
 import com.cml.currencyexchanger.Extensions.Companion.toFloatOrZero
 import com.cml.currencyexchanger.Extensions.Companion.toLongOrZero
 import com.cml.currencyexchanger.Extensions.Companion.toStringOrEmpty
+import com.cml.currencyexchanger.data.models.Balance
+import com.cml.currencyexchanger.data.models.Conversion
 import com.cml.currencyexchanger.data.models.Currency
 import com.cml.currencyexchanger.data.models.ExchangeRates
-import com.cml.currencyexchanger.data.models.Balance
-import com.cml.currencyexchanger.data.models.Balance.Companion.COMMISSION_PERCENT
 import com.cml.currencyexchanger.data.repositories.ExchangeRatesRepository
 import com.cml.currencyexchanger.data.repositories.UserRepository
 import dagger.assisted.Assisted
@@ -22,7 +22,7 @@ import io.reactivex.disposables.CompositeDisposable
 class CurrencyConverterViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     exchangeRatesRepository: ExchangeRatesRepository,
-    userRepository: UserRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val disposable by lazy { CompositeDisposable() }
@@ -68,7 +68,7 @@ class CurrencyConverterViewModel @AssistedInject constructor(
     private val sellAmountLiveData by lazy { MutableLiveData<Float>() }
     fun setSellAmount(amount: Float) {
         sellAmountLiveData.value = amount
-        calculatedCommission.value = amount * COMMISSION_PERCENT
+        calculatedCommission.value = calcRealCommission(amount)
         setReceiveAmount()
     }
 
@@ -96,6 +96,9 @@ class CurrencyConverterViewModel @AssistedInject constructor(
         receiveCurrencyLiveData.value = currency
         setReceiveAmount()
     }
+
+    private val _conversionLiveData by lazy { MutableLiveData<Conversion>() }
+    val conversionLiveData: LiveData<Conversion> get() = _conversionLiveData
 
     private fun calculateReceiveAmount(): Float? {
         val inAmount = sellAmountLiveData.value.toFloatOrZero()
@@ -127,20 +130,43 @@ class CurrencyConverterViewModel @AssistedInject constructor(
         return true
     }
 
+    private fun calcRealCommission(amount: Float): Float {
+        return _balanceLiveData.value?.calcCommission(
+            amount,
+            userConversionsAmountLiveData.value.toLongOrZero()
+        ) ?: 0.0f
+    }
+
     fun areEnoughFunds(): Boolean {
-        val realCommission =
-            if (userConversionsAmountLiveData.value.toLongOrZero() > Balance.FREE_CONVERSIONS) calculatedCommission.value.toFloatOrZero()
-            else 0.0f
         _balanceLiveData.value?.let {
-            val currentCurrencyBalance =
-                it.findBalance(sellCurrencyLiveData.value.toStringOrEmpty())
             return it.areEnoughFunds(
-                currentCurrencyBalance,
+                it.findBalanceValue(sellCurrencyLiveData.value.toStringOrEmpty()),
                 sellAmountLiveData.toFloatOrZero(),
-                realCommission
+                calculatedCommission.value.toFloatOrZero()
             )
         }
         return false
+    }
+
+    fun convert() {
+        _balanceLiveData.value?.let { balance ->
+            val conversion = Conversion(
+                sellCurrencyLiveData.value.toStringOrEmpty(),
+                receiveCurrencyLiveData.value.toStringOrEmpty(),
+                sellAmountLiveData.value.toFloatOrZero(),
+                _receiveAmountLiveData.value.toFloatOrZero(),
+                calculatedCommission.value.toFloatOrZero(),
+                balance
+            )
+            userRepository.convert(
+                conversion
+            ).subscribe(
+                { _conversionLiveData.value = conversion },
+                { Log.e("Conversion Error!", "$it") }
+            )
+                .also { disposable.add(it) }
+        }
+
     }
 
 

@@ -2,7 +2,9 @@ package com.cml.currencyexchanger.data.repositories
 
 import android.annotation.SuppressLint
 import com.cml.currencyexchanger.data.dao.UserDao
+import com.cml.currencyexchanger.data.models.Conversion
 import com.cml.currencyexchanger.data.models.User
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,6 +33,21 @@ class UserRepository @Inject constructor(
         return userDao.observeUser()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun convert(conversion: Conversion): Completable {
+        val newBalance =
+            conversion.balance.incrementBalance(conversion.toCurrency, conversion.toAmount)
+                ?.decrementBalance(
+                    conversion.fromCurrency,
+                    conversion.fromAmount + conversion.commission
+                )
+        newBalance?.let {
+            return userDao.updateBalance(newBalance)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+        }
+        return Completable.error(java.lang.IllegalStateException("New Balance is null"))
     }
 
 

@@ -32,7 +32,19 @@ class CurrencyConverterFragment :
         observeReceiveAmount()
         observeBalances()
         onSubmitButtonClick()
+        observeConversion()
+    }
 
+    private fun observeConversion() {
+        viewModel.conversionLiveData.observe(viewLifecycleOwner) {
+            PopupMessage(requireContext()).showConversionSuccessPopup(
+                it.fromAmount.toString(),
+                it.fromCurrency,
+                it.toAmount.toString(),
+                it.toCurrency,
+                it.commission.toString()
+            )
+        }
     }
 
     private fun onSubmitButtonClick() {
@@ -132,10 +144,7 @@ class CurrencyConverterFragment :
             PopupMessage(requireContext()).showNoMoneyFailurePopup()
             return
         }
-
-        //TODO: conversion itself
-
-
+        viewModel.convert()
     }
 
 }

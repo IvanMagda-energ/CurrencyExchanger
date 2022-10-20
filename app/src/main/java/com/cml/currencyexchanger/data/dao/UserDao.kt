@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.cml.currencyexchanger.data.models.Balance
 import com.cml.currencyexchanger.data.models.User
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -24,4 +25,7 @@ abstract class UserDao {
 
     @Query("DELETE FROM User")
     abstract fun clearUserTable(): Completable
+
+    @Query("UPDATE User SET balance =:balance, conversionsAmount = conversionsAmount + 1")
+    abstract fun updateBalance(balance: Balance): Completable
 }
