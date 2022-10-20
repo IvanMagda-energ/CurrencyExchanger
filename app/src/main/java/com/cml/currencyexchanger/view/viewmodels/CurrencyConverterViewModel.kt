@@ -66,7 +66,7 @@ class CurrencyConverterViewModel @AssistedInject constructor(
         val inAmount = sellAmountLiveData.value?.toFloat() ?: 0.0F
         val inCurrency = sellCurrencyLiveData.value?.toString() ?: ""
         val outCurrency = receiveCurrencyLiveData.value?.toString() ?: ""
-        return if (inAmount.isPositive() && inCurrency.isNotEmpty() && outCurrency.isNotEmpty()) {
+        return if (inCurrency.isNotEmpty() && outCurrency.isNotEmpty()) {
             currentRatesLiveData.value?.convert(
                 inAmount,
                 inCurrency,

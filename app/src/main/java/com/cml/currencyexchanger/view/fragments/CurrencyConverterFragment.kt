@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.cml.currencyexchanger.App
+import com.cml.currencyexchanger.Extensions.Companion.isPositive
 import com.cml.currencyexchanger.data.models.Currency
 import com.cml.currencyexchanger.databinding.FragmentCurrencyConverterBinding
 import com.cml.currencyexchanger.view.utils.lazyViewModel
@@ -33,7 +34,8 @@ class CurrencyConverterFragment :
     @SuppressLint("SetTextI18n")
     private fun observeReceiveAmount() {
         viewModel.receiveAmountLiveData.observe(viewLifecycleOwner) {
-            binding.currencyExchangeView.receiveAmountTextView.text = "+ $it"
+            if(it.isPositive()) binding.currencyExchangeView.receiveAmountTextView.text = "+ $it"
+            else binding.currencyExchangeView.receiveAmountTextView.text = ""
         }
     }
 
